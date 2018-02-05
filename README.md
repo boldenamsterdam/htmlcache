@@ -2,37 +2,47 @@
 
 HTML Cache
 
-![Screenshot](resources/img/plugin-logo.png)
-
 ## Requirements
 
-This plugin requires Craft CMS 3.0.0-beta.23 or later.
+This plugin requires Craft CMS 3 or later.
 
 ## Installation
 
 To install the plugin, follow these instructions.
 
+ 
 1. Open your terminal and go to your Craft project:
 
         cd /path/to/project
 
-2. Then tell Composer to load the plugin:
+2. Add the repository in your composer.json file (make sure your ssh key is setup in bitbucket)
 
-        composer require boldenamsterdam/htmlcache
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@bitbucket.org:bolden/htmlcache-plugin.git"
+    }
+  ]
+  
+3. Then tell Composer to load the plugin:
 
-3. In the Control Panel, go to Settings → Plugins and click the “Install” button for HTML Cache.
+        composer require bolden/htmlcache
+
+4. In the Control Panel, go to Settings → Plugins and click the “Install” button for HTML Cache.
 
 ## HTML Cache Overview
 
--Insert text here-
+Creates a HTML Cached page for any non-cp GET request for the duration of one hour (configurable) or until an entry has been updated. 
+To work in DEV-mode use the force option in the settings.
+
 
 ## Configuring HTML Cache
 
--Insert text here-
+Use the plugin settings to configure it.
 
 ## Using HTML Cache
 
--Insert text here-
+HTML Cache has a settings page where you can enable/disable both normal and ubercache. The ubercache alters the public/index.php file to include extra functionality before Craft gets initialised, eliminating the TTFB caused by Yii.
 
 ## HTML Cache Roadmap
 
