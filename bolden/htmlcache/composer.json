@@ -1,0 +1,41 @@
+{
+    "name": "bolden/htmlcache",
+    "description": "HTML Cache",
+    "type": "craft-plugin",
+    "version": "0.0.1",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "html cache"
+    ],
+    "support": {
+        "docs": "https://github.com/boldenamsterdam/htmlcache/blob/master/README.md",
+        "issues": "https://github.com/boldenamsterdam/htmlcache/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bolden B.V.",
+            "homepage": "http://www.bolden.nl"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+          "bolden\\htmlcache\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "HTML Cache",
+        "handle": "htmlcache",
+        "schemaVersion": "0.0.1",
+        "hasCpSettings": true,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/boldenamsterdam/htmlcache/master/CHANGELOG.md",
+        "class": "bolden\\htmlcache\\HtmlCache"
+    }
+}
