@@ -17,12 +17,12 @@ To install the plugin, follow these instructions.
 
 2. Add the repository in your composer.json file (make sure your ssh key is setup in bitbucket)
 
-    "repositories": [
+`    "repositories": [
       {
         "type": "vcs",
         "url": "git@bitbucket.org:bolden/htmlcache-plugin.git"
       }
-    ]
+    ]`
   
 3. Then tell Composer to load the plugin:
 
