@@ -14,7 +14,7 @@ use Craft;
 /**
  * Htmlcache Service
  *
- * All of your pluginâ€™s business logic should go in services, including saving data,
+ * All of your plugin’s business logic should go in services, including saving data,
  * retrieving data, etc. They provide APIs that your controllers, template variables,
  * and other plugins can interact with.
  *
@@ -48,7 +48,7 @@ class HtmlcacheAssets
 
     public static function directory()
     {
-        if (defined(CRAFT_STORAGE_PATH)) {
+        if (defined('CRAFT_STORAGE_PATH')) {
             return CRAFT_STORAGE_PATH . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'htmlcache' . DIRECTORY_SEPARATOR;
         }
 
