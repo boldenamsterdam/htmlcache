@@ -11,8 +11,8 @@
         "html cache"
     ],
     "support": {
-        "docs": "https://github.com/boldenamsterdam/htmlcache/blob/master/README.md",
-        "issues": "https://github.com/boldenamsterdam/htmlcache/issues"
+        "docs": "",
+        "issues": ""
     },
     "license": "MIT",
     "authors": [
@@ -35,7 +35,6 @@
         "schemaVersion": "0.0.1",
         "hasCpSettings": true,
         "hasCpSection": false,
-        "changelogUrl": "https://raw.githubusercontent.com/boldenamsterdam/htmlcache/master/CHANGELOG.md",
         "class": "bolden\\htmlcache\\HtmlCache"
     }
 }
