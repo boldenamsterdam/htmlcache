@@ -30,7 +30,6 @@
         }
     },
     "extra": {
-        "basePath": "./",
         "name": "HTML Cache",
         "handle": "htmlcache",
         "schemaVersion": "0.0.1",
