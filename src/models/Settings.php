@@ -15,10 +15,11 @@ class Settings extends \craft\base\Model
     public $enableIndex;
     public $forceOn;
     public $cacheDuration = 3600;
+    public $purgeCache;
 
     public function rules() {
         return [
-            [ ['enableGeneral', 'enableIndex', 'forceOn' ], 'boolean' ],
+            [ ['enableGeneral', 'enableIndex', 'forceOn', 'purgeCache' ], 'boolean' ],
             [ ['cacheDuration' ], 'integer' ],
         ];
     }

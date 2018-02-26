@@ -116,6 +116,11 @@ class HtmlCache extends Plugin
         }
 
         if (!empty($values['purgeCache'])) {
+            $this->setComponents(
+                [
+                    'htmlcacheService' => HtmlcacheService::class,
+                ]
+            );
             $this->htmlcacheService->clearCacheFiles();
         }
         return parent::setSettings($values);
@@ -142,7 +147,7 @@ class HtmlCache extends Plugin
             ]
         );
 
-        if ($this->isInstalled && $this->settings->forceOn) {
+        if ($this->isInstalled) {
             $this->htmlcacheService->checkForCacheFile();
             Event::on(Response::class, Response::EVENT_AFTER_SEND, function () {
                 $this->htmlcacheService->createCacheFile();
