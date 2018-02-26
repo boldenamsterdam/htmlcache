@@ -31,7 +31,7 @@
     },
     "extra": {
         "name": "HTML Cache",
-        "handle": "htmlcache",
+        "handle": "html-cache",
         "schemaVersion": "0.0.1",
         "hasCpSettings": true,
         "hasCpSection": false,
