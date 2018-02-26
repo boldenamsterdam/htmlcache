@@ -42,7 +42,7 @@ use yii\base\Event;
  * @since     0.0.1
  *
  */
-class Htmlcache extends Plugin
+class HtmlCache extends Plugin
 {
     // Static Properties
     // =========================================================================

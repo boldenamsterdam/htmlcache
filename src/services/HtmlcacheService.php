@@ -13,10 +13,10 @@ namespace bolden\htmlcache\services;
 use Craft;
 use craft\base\Component;
 use bolden\htmlcache\assets\HtmlcacheAssets;
-use bolden\htmlcache\Htmlcache;
+use bolden\htmlcache\HtmlCache;
 
 /**
- * Htmlcache Service
+ * HtmlCache Service
  *
  * All of your plugin’s business logic should go in services, including saving data,
  * retrieving data, etc. They provide APIs that your controllers, template variables,
@@ -51,7 +51,7 @@ class HtmlcacheService extends Component
     public function canCreateCacheFile()
     {
         // Skip if we're running in devMode and not in force mode
-        $settings = Htmlcache::getInstance()->getSettings();
+        $settings = HtmlCache::getInstance()->getSettings();
         if (\Craft::$app->config->general->devMode === true && $settings->forceOn == false) {
             return false;
         }
