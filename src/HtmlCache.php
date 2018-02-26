@@ -212,8 +212,7 @@ class HtmlCache extends Plugin
         Craft::info(
             Craft::t(
                 'htmlcache',
-                '{name} plugin loaded',
-                ['name' => $this->name]
+                'HTML Cache plugin loaded'
             ),
             __METHOD__
         );
