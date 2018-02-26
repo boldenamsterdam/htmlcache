@@ -93,7 +93,7 @@ class HtmlCache extends Plugin
     protected function settingsHtml(): string
     {
         return \Craft::$app->getView()->renderTemplate(
-            'htmlcache/_settings',
+            'html-cache/_settings',
             [
                 'settings' => $this->getSettings(),
             ]

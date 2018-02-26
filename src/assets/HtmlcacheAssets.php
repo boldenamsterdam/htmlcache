@@ -14,7 +14,7 @@ use Craft;
 /**
  * HtmlCache Service
  *
- * All of your plugin’s business logic should go in services, including saving data,
+ * All of your pluginï¿½s business logic should go in services, including saving data,
  * retrieving data, etc. They provide APIs that your controllers, template variables,
  * and other plugins can interact with.
  *
@@ -67,8 +67,8 @@ class HtmlcacheAssets
                 file_put_contents($file, str_replace($replaceFrom, $replaceWith . $replaceFrom, $contents));
             }
         } else {
-            $beginning = '/*HTMLCache Begin*/';
-            $end = '/*HTMLCache End*/';
+            $beginning = "/*HTMLCache Begin*/";
+            $end = "/*HTMLCache End*/\n\n";
 
             $beginningPos = strpos($contents, $beginning);
             $endPos = strpos($contents, $end);
