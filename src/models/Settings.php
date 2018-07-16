@@ -12,14 +12,14 @@ namespace bolden\htmlcache\models;
 class Settings extends \craft\base\Model
 {
     public $enableGeneral = 1;
-    public $enableIndex;
-    public $forceOn;
+    // public $enableIndex;
+    public $forceOn = 0;
     public $cacheDuration = 3600;
-    public $purgeCache;
+    public $purgeCache = 0;
 
     public function rules() {
         return [
-            [ ['enableGeneral', 'enableIndex', 'forceOn', 'purgeCache' ], 'boolean' ],
+            [ ['enableGeneral', 'forceOn', 'purgeCache' ], 'boolean' ],
             [ ['cacheDuration' ], 'integer' ],
         ];
     }

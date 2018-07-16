@@ -9,14 +9,14 @@
     on:           settings.enableGeneral
 }) }}
 
-{{ forms.lightswitchField({
+{# {{ forms.lightswitchField({
     label:        "Enable UberCache by altering index.php?" | t,
     id:           'enableIndex',
     name:         'enableIndex',
     instructions: "This will alter the public/index.php to include htmlcache functions before Craft is loaded. This will improve the speed drastically." | t,
     errors:       settings.getErrors('enableIndex'),
     on:           settings.enableIndex
-}) }}
+}) }} #}
 
 {{ forms.lightswitchField({
     label:        "Force on" | t,

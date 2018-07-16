@@ -26,7 +26,7 @@ use Craft;
  */
 class HtmlcacheAssets
 {
-    public static function filename($withDirectory = true)
+    public static function filename($uid, $withDirectory = true)
     {
         $protocol = 'http://';
         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
@@ -38,8 +38,7 @@ class HtmlcacheAssets
             $host = $_SERVER['SERVER_NAME'];
         }
 
-        $uri = $_SERVER['REQUEST_URI'];
-        $fileName = md5($protocol . $host . $uri) . '.html';
+        $fileName = $uid . '.html';
         if ($withDirectory) {
             $fileName = self::directory() . $fileName;
         }
@@ -56,33 +55,33 @@ class HtmlcacheAssets
         return CRAFT_BASE_PATH . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'htmlcache' . DIRECTORY_SEPARATOR;
     }
 
-    public static function indexEnabled($enabled = true)
+    // public static function indexEnabled($enabled = true)
+    // {
+    //     $replaceWith = "/*HTMLCache Begin*/\nrequire_once CRAFT_VENDOR_PATH . DIRECTORY_SEPARATOR . 'bolden' . DIRECTORY_SEPARATOR . 'htmlcache' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'HtmlcacheAssets.php';\nbolden\htmlcache\assets\HtmlcacheAssets::checkCache();\n/*HTMLCache End*/\n\n";
+    //     $replaceFrom = "// Load Composer's autoloader";
+    //     $file = $_SERVER['SCRIPT_FILENAME'];
+    //     $contents = file_get_contents($file);
+    //     if ($enabled) {
+    //         if (stristr($contents, 'htmlcache') === false) {
+    //             file_put_contents($file, str_replace($replaceFrom, $replaceWith . $replaceFrom, $contents));
+    //         }
+    //     } else {
+    //         $beginning = "/*HTMLCache Begin*/";
+    //         $end = "/*HTMLCache End*/\n\n";
+
+    //         $beginningPos = strpos($contents, $beginning);
+    //         $endPos = strpos($contents, $end);
+
+    //         if ($beginningPos !== false && $endPos !== false) {
+    //             $textToDelete = substr($contents, $beginningPos, ($endPos + strlen($end)) - $beginningPos);
+    //             file_put_contents($file, str_replace($textToDelete, '', $contents));
+    //         }
+    //     }
+    // }
+
+    public static function checkCache($uid, $direct = true)
     {
-        $replaceWith = "/*HTMLCache Begin*/\nrequire_once CRAFT_VENDOR_PATH . DIRECTORY_SEPARATOR . 'bolden' . DIRECTORY_SEPARATOR . 'htmlcache' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'HtmlcacheAssets.php';\nbolden\htmlcache\assets\HtmlcacheAssets::checkCache();\n/*HTMLCache End*/\n\n";
-        $replaceFrom = "// Load Composer's autoloader";
-        $file = $_SERVER['SCRIPT_FILENAME'];
-        $contents = file_get_contents($file);
-        if ($enabled) {
-            if (stristr($contents, 'htmlcache') === false) {
-                file_put_contents($file, str_replace($replaceFrom, $replaceWith . $replaceFrom, $contents));
-            }
-        } else {
-            $beginning = "/*HTMLCache Begin*/";
-            $end = "/*HTMLCache End*/\n\n";
-
-            $beginningPos = strpos($contents, $beginning);
-            $endPos = strpos($contents, $end);
-
-            if ($beginningPos !== false && $endPos !== false) {
-                $textToDelete = substr($contents, $beginningPos, ($endPos + strlen($end)) - $beginningPos);
-                file_put_contents($file, str_replace($textToDelete, '', $contents));
-            }
-        }
-    }
-
-    public static function checkCache($direct = true)
-    {
-        $file = self::filename(true);
+        $file = self::filename($uid, true);
         if (file_exists($file)) {
             if (file_exists($settingsFile = self::directory() . 'settings.json')) {
                 $settings = json_decode(file_get_contents($settingsFile), true);

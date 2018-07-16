@@ -14,6 +14,12 @@ use Craft;
 use craft\base\Component;
 use bolden\htmlcache\assets\HtmlcacheAssets;
 use bolden\htmlcache\HtmlCache;
+use craft\elements\Entry;
+use craft\services\Elements;
+use yii\base\Event;
+use craft\elements\db\ElementQuery;
+use bolden\htmlcache\records\HtmlCacheCache;
+use bolden\htmlcache\records\HtmlCacheElement;
 
 /**
  * HtmlCache Service
@@ -35,17 +41,15 @@ class HtmlcacheService extends Component
         if (!$this->canCreateCacheFile()) {
             return;
         }
-
-        $file = $this->getCacheFileName();
-        if (file_exists($file)) {
-            HtmlcacheAssets::checkCache(false);
-
+        $uri = \Craft::$app->request->getParam('p');
+        $siteId = \Craft::$app->getSites()->getCurrentSite()->id;
+        $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
+        if ($cacheEntry) {
+            HtmlcacheAssets::checkCache($cacheEntry->uid, false);
             return \Craft::$app->end();
         }
         // Turn output buffering on
-        else {
-            ob_start();
-        }
+        ob_start();
     }
     
     public function canCreateCacheFile()
@@ -88,34 +92,66 @@ class HtmlcacheService extends Component
     
     public function createCacheFile()
     {
+        $uri = \Craft::$app->request->getParam('p');
+        $siteId = \Craft::$app->getSites()->getCurrentSite()->id;
         if ($this->canCreateCacheFile() && http_response_code() == 200) {
-            $content = ob_get_contents();
-            ob_end_clean();
-            $file = $this->getCacheFileName();
-            $fp = fopen($file, 'w+');
-            if ($fp) {
-                fwrite($fp, $content);
-                fclose($fp);
+            $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
+            if ($cacheEntry) {
+                $content = ob_get_contents();
+                ob_end_clean();
+                $file = $this->getCacheFileName($cacheEntry->uid);
+                $fp = fopen($file, 'w+');
+                if ($fp) {
+                    fwrite($fp, $content);
+                    fclose($fp);
+                }
+                else {
+                    self::log('HTML Cache could not write cache file "' . $file . '"');
+                }
+                echo $content;
+            } else {
+                self::log('HTML Cache could not find cache entry for siteId: "' . $siteId . '" and uri: "' . $uri .'"');
             }
-            else {
-                //self::log('HTML Cache could not write cache file "' . $file . '"');
-            }
-            echo $content;
         }
     }
     
+    public function clearCacheFile($elementId)
+    {
+        // get all possible caches
+        $elements = HtmlCacheElement::findAll(['elementId' => $elementId]);
+        // \craft::Dd($elements);
+        $cacheIds = array_map(function($el) {
+            return $el->cacheId;
+        }, $elements);
+
+        // get all possible caches
+        $caches = HtmlCacheCache::findAll(['id' => $cacheIds]);
+        foreach ($caches as $cache) {
+            $file = $this->getCacheFileName($cache->uid);
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+
+
+        // delete caches for related entry
+        HtmlCacheCache::deleteAll(['id'=> $cacheIds]);
+        return true;
+    }
+
     public function clearCacheFiles()
     {
         // @todo split between all/single cache file
         foreach (glob($this->getCacheFileDirectory() . '*.html') as $file) {
             unlink($file);
         }
+        HtmlCacheCache::deleteAll();
         return true;
     }
     
-    private function getCacheFileName($withDirectory = true)
+    private function getCacheFileName($uid, $withDirectory = true)
     {
-        return HtmlcacheAssets::filename($withDirectory);
+        return HtmlcacheAssets::filename($uid, $withDirectory);
     }
     
     private function getCacheFileDirectory()
@@ -123,7 +159,7 @@ class HtmlcacheService extends Component
         return HtmlcacheAssets::directory();
     }
     
-    public function log($settings, $errors, $level)
+    public function log($error, $level = '')
     {
         // Firstly, store in plugin log file (use $level to control log level)
         //HtmlcachePlugin::log(print_r($errors, true), $level, true);

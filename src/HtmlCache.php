@@ -26,6 +26,12 @@ use bolden\htmlcache\assets\HtmlcacheAssets;
 use bolden\htmlcache\models\Settings;
 
 use yii\base\Event;
+use craft\elements\db\ElementQuery;
+use craft\elements\Category;
+use craft\elements\Entry;
+use craft\elements\Asset;
+use bolden\htmlcache\records\HtmlCacheCache;
+use bolden\htmlcache\records\HtmlCacheElement;
 
 /**
  * Craft plugins are very much like little applications in and of themselves. We’ve made
@@ -54,7 +60,7 @@ class HtmlCache extends Plugin
      * @var HtmlCache
      */
     public static $plugin;
-
+    public $schemaVersion = '1.0.0';
     public $allowAnonymous = true;
     public $hasCpSettings = true;
 
@@ -107,13 +113,14 @@ class HtmlCache extends Plugin
      */
     public function setSettings(array $values)
     {
-        HtmlcacheAssets::indexEnabled($values['enableIndex'] == 1 ? true : false);
+        // HtmlcacheAssets::indexEnabled($values['enableIndex'] == 1 ? true : false);
         
         // Check if it actually worked
-        if (stristr(file_get_contents($_SERVER['SCRIPT_FILENAME']), 'htmlcache') === false && $values['enableIndex'] == 1) {
-            \Craft::$app->userSession->setError(Craft::t('The file ' . $_SERVER['SCRIPT_FILENAME'] . ' could not be edited'));
-            return false;
-        }
+        // if (stristr(file_get_contents($_SERVER['SCRIPT_FILENAME']), 'htmlcache') === false && $values['enableIndex'] == 1) {
+        // if (stristr(file_get_contents($_SERVER['SCRIPT_FILENAME']), 'htmlcache') === false) {
+        //     \Craft::$app->userSession->setError(Craft::t('The file ' . $_SERVER['SCRIPT_FILENAME'] . ' could not be edited'));
+        //     return false;
+        // }
 
         if (!empty($values['purgeCache'])) {
             $this->setComponents(
@@ -123,6 +130,8 @@ class HtmlCache extends Plugin
             );
             $this->htmlcacheService->clearCacheFiles();
         }
+        // always reset value for purge cache
+        $values['purgeCache'] = '';
         return parent::setSettings($values);
     }
 
@@ -149,12 +158,41 @@ class HtmlCache extends Plugin
 
         if ($this->isInstalled) {
             $this->htmlcacheService->checkForCacheFile();
-            Event::on(Response::class, Response::EVENT_AFTER_SEND, function () {
+            Event::on(Response::class, Response::EVENT_AFTER_SEND, function (Event $event) {
                 $this->htmlcacheService->createCacheFile();
             });
 
             Event::on(Elements::class, Elements::EVENT_AFTER_SAVE_ELEMENT, function (Event $event) {
-                $this->htmlcacheService->clearCacheFiles();
+                $this->htmlcacheService->clearCacheFile($event->element->id);
+            });
+
+            // on populated element put to relation table
+            Event::on(ElementQuery::class, ElementQuery::EVENT_AFTER_POPULATE_ELEMENT, function($event){
+                // procceed only if it should be created
+                if($this->htmlcacheService->canCreateCacheFile()) {
+                    $elementClass = get_class($event->element);
+                    if (in_array($elementClass, [Entry::class, Category::class, Asset::class])) {
+                        $uri = \Craft::$app->request->getParam('p', '');
+                        $siteId = \Craft::$app->getSites()->getCurrentSite()->id;
+                        $elementId = $event->element->id;
+                        
+                        $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
+                        if (!$cacheEntry) {
+                            $cacheEntry = new HtmlCacheCache();
+                            $cacheEntry->id = null;
+                            $cacheEntry->uri = $uri;
+                            $cacheEntry->siteId = $siteId;                        
+                            $cacheEntry->save();    
+                        }
+                        $cacheElement = HtmlCacheElement::findOne(['elementId' => $elementId, 'cacheId' => $cacheEntry->id]);
+                        if (!$cacheElement) {
+                            $cacheElement = new HtmlCacheElement();
+                            $cacheElement->elementId = $elementId;
+                            $cacheElement->cacheId = $cacheEntry->id;
+                            $cacheElement->save();
+                        }
+                    }
+                }
             });
         }
         
@@ -178,7 +216,7 @@ class HtmlCache extends Plugin
             function (PluginEvent $event) {
                 if ($event->plugin === $this) {
                     // reset index file if needed
-                    HtmlcacheAssets::indexEnabled(false);
+                    // HtmlcacheAssets::indexEnabled(false);
                 }
             }
         );
