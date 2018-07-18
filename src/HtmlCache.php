@@ -109,26 +109,6 @@ class HtmlCache extends Plugin
     }
 
     /**
-     * Process the settings and check if the index needs to be altered
-     *
-     * @return function
-     */
-    public function setSettings(array $values)
-    {
-        if (!empty($values['purgeCache'])) {
-            $this->setComponents(
-                [
-                    'htmlcacheService' => HtmlcacheService::class,
-                ]
-            );
-            $this->htmlcacheService->clearCacheFiles();                
-        }
-        // always reset value for purge cache
-        $values['purgeCache'] = '';
-        return parent::setSettings($values);
-    }
-
-    /**
      * Init plugin and initiate events
      */
     public function init()
@@ -184,6 +164,16 @@ class HtmlCache extends Plugin
                         }
                     }
                 }
+            });
+
+            // always reset purge cache value
+            Event::on(Plugin::class, Plugin::EVENT_BEFORE_SAVE_SETTINGS, function($event){
+                $settings = $event->sender->getSettings();
+                if ($settings->purgeCache === '1') {
+                    $this->htmlcacheService->clearCacheFiles();
+                }
+                // always reset value for purge cache
+                $event->sender->setSettings(['purgeCache' => '']);
             });
         }
         
