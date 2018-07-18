@@ -50,9 +50,7 @@ class HtmlcacheService extends Component
         if (!$this->canCreateCacheFile()) {
             return;
         }
-        $uri = $this->uri;
-        $siteId = $this->siteId;
-        $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
+        $cacheEntry = HtmlCacheCache::findOne(['uri' => $this->uri, 'siteId' => $this->siteId]);
         
         // check if cache exists
         if ($cacheEntry) {
@@ -108,8 +106,31 @@ class HtmlcacheService extends Component
         if (!\Craft::$app->request->getIsGet()) {
             return false;
         }
+        // Skip if route from element api
+        if ($this->isElementApiRoute()) {
+            return false;
+        }
         return true;
     }
+
+    /**
+     * Check if route is from element api
+     *
+     * @return boolean
+     */
+    private function isElementApiRoute() {   
+        $elementApiRoutes = \Craft::$app->getPlugins()->getPlugin('element-api')->getSettings()->endpoints;
+        $routes = array_keys($elementApiRoutes);
+        foreach ($routes as $route) {
+            // form the correct expression
+            $route = preg_replace('~\<.*?:(.*?)\>~', '$1', $route);
+            $found = preg_match('~' . $route . '~', $this->uri);
+            if ($found) {
+                return true;
+            }
+        }
+        return false;
+    }    
     
     /**
      * Create the cache file
@@ -118,11 +139,9 @@ class HtmlcacheService extends Component
      */
     public function createCacheFile()
     {
-        $uri = $this->uri;
-        $siteId = $this->siteId;
         // check if valid to create the file
         if ($this->canCreateCacheFile() && http_response_code() == 200) {
-            $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
+            $cacheEntry = HtmlCacheCache::findOne(['uri' => $this->uri, 'siteId' => $this->siteId]);
             // check if entry exists and start capturing content
             if ($cacheEntry) {
                 $content = ob_get_contents();
@@ -138,7 +157,7 @@ class HtmlcacheService extends Component
                 }
                 echo $content;
             } else {
-                \Craft::info('HTML Cache could not find cache entry for siteId: "' . $siteId . '" and uri: "' . $uri .'"');
+                \Craft::info('HTML Cache could not find cache entry for siteId: "' . $this->siteId . '" and uri: "' . $this->uri .'"');
             }
         }
     }
