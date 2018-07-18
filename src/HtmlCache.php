@@ -32,6 +32,8 @@ use craft\elements\Entry;
 use craft\elements\Asset;
 use bolden\htmlcache\records\HtmlCacheCache;
 use bolden\htmlcache\records\HtmlCacheElement;
+use craft\elements\User;
+use craft\elements\GlobalSet;
 
 /**
  * Craft plugins are very much like little applications in and of themselves. We’ve made
@@ -158,7 +160,7 @@ class HtmlCache extends Plugin
                 // procceed only if it should be created
                 if($this->htmlcacheService->canCreateCacheFile()) {
                     $elementClass = get_class($event->element);
-                    if (in_array($elementClass, [Entry::class, Category::class, Asset::class])) {
+                    if (!in_array($elementClass, [User::class, GlobalSet::class])) {
                         $uri = \Craft::$app->request->getParam('p', '');
                         $siteId = \Craft::$app->getSites()->getCurrentSite()->id;
                         $elementId = $event->element->id;

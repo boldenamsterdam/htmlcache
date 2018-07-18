@@ -28,6 +28,17 @@ use bolden\htmlcache\records\HtmlCacheElement;
  */
 class HtmlcacheService extends Component
 {
+    private $uri;
+    private $siteId;
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        $this->uri = \Craft::$app->request->getParam('p', '');
+        $this->siteId = \Craft::$app->getSites()->getCurrentSite()->id;
+    }
+
     /**
      * Check if cache file exists
      *
@@ -39,13 +50,18 @@ class HtmlcacheService extends Component
         if (!$this->canCreateCacheFile()) {
             return;
         }
-        $uri = \Craft::$app->request->getParam('p');
-        $siteId = \Craft::$app->getSites()->getCurrentSite()->id;
+        $uri = $this->uri;
+        $siteId = $this->siteId;
         $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
+        
+        // check if cache exists
         if ($cacheEntry) {
-            // check cache
-            $this->checkCache($cacheEntry->uid);
-            return \Craft::$app->end();
+            $file = $this->getCacheFileName($cacheEntry->uid);
+            if (file_exists($file)) {
+                // load cache
+                $this->loadCache($file);
+                return \Craft::$app->end();
+            }
         }
         // Turn output buffering on
         ob_start();
@@ -102,8 +118,8 @@ class HtmlcacheService extends Component
      */
     public function createCacheFile()
     {
-        $uri = \Craft::$app->request->getParam('p');
-        $siteId = \Craft::$app->getSites()->getCurrentSite()->id;
+        $uri = $this->uri;
+        $siteId = $this->siteId;
         // check if valid to create the file
         if ($this->canCreateCacheFile() && http_response_code() == 200) {
             $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
@@ -164,7 +180,7 @@ class HtmlcacheService extends Component
      */
     public function clearCacheFiles()
     {
-        FileHelper::clearDirectory();
+        FileHelper::clearDirectory($this->getDirectory());
         HtmlCacheCache::deleteAll();
     }
 
@@ -199,49 +215,21 @@ class HtmlcacheService extends Component
     /**
      * Check cache and return it if exists
      *
-     * @param string $uid
+     * @param string $file
      * @return mixed
      */
-    private function checkCache($uid)
+    private function loadCache($file)
     {
-        $file = $this->getCacheFileName($uid);
-        // check if file exists
-        if (file_exists($file)) {
-            if (file_exists($settingsFile = $this->getDirectory() . 'settings.json')) {
-                $settings = json_decode(file_get_contents($settingsFile), true);
-            } else {
-                $settings = ['cacheDuration' => 3600];
-            }
-            if (time() - ($fmt = filemtime($file)) >= $settings['cacheDuration']) {
-                unlink($file);
-                return false;
-            }
-            $content = file_get_contents($file);
-
-            // Check the content type
-            $isJson = false;
-            if (strlen($content) && ($content[0] == '[' || $content[0] == '{')) {
-                // JSON?
-                @json_decode($content);
-                if (json_last_error() == JSON_ERROR_NONE) {
-                    $isJson = true;
-                }
-            }
-            
-            // Add extra headers
-            if ($isJson) {
-                if ($direct) {
-                    header('Content-type:application/json');
-                }
-                echo $content;
-            } else {
-                if ($direct) {
-                    header('Content-type:text/html;charset=UTF-8');
-                }
-                echo $content;
-            }
+        if (file_exists($settingsFile = $this->getDirectory() . 'settings.json')) {
+            $settings = json_decode(file_get_contents($settingsFile), true);
+        } else {
+            $settings = ['cacheDuration' => 3600];
         }
-        return true;
+        if (time() - ($fmt = filemtime($file)) >= $settings['cacheDuration']) {
+            unlink($file);
+            return false;
+        }
+        echo file_get_contents($file);
     }
 
 }
