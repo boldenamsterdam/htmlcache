@@ -2,16 +2,18 @@
 /**
  * HTML Cache plugin for Craft CMS 3.x
  *
- * html cahce
+ * HTML Cache Service
  *
  * @link      http://www.bolden.nl
  * @copyright Copyright (c) 2018 Bolden B.V.
+ * @author Klearchos Douvantzis
  */
 
 namespace bolden\htmlcache\services;
 
 use Craft;
 use craft\base\Component;
+use craft\helpers\FileHelper;
 use bolden\htmlcache\assets\HtmlcacheAssets;
 use bolden\htmlcache\HtmlCache;
 use craft\elements\Entry;
@@ -23,21 +25,17 @@ use bolden\htmlcache\records\HtmlCacheElement;
 
 /**
  * HtmlCache Service
- *
- * All of your plugin’s business logic should go in services, including saving data,
- * retrieving data, etc. They provide APIs that your controllers, template variables,
- * and other plugins can interact with.
- *
- * https://craftcms.com/docs/plugins/services
- *
- * @author    Bolden B.V.
- * @package   HtmlCache
- * @since     0.0.1
  */
 class HtmlcacheService extends Component
 {
+    /**
+     * Check if cache file exists
+     *
+     * @return void
+     */
     public function checkForCacheFile()
     {
+        // first check if we can create a file
         if (!$this->canCreateCacheFile()) {
             return;
         }
@@ -45,13 +43,19 @@ class HtmlcacheService extends Component
         $siteId = \Craft::$app->getSites()->getCurrentSite()->id;
         $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
         if ($cacheEntry) {
-            HtmlcacheAssets::checkCache($cacheEntry->uid, false);
+            // check cache
+            $this->checkCache($cacheEntry->uid);
             return \Craft::$app->end();
         }
         // Turn output buffering on
         ob_start();
     }
     
+    /**
+     * Check if creation of file is allowed
+     *
+     * @return boolean
+     */
     public function canCreateCacheFile()
     {
         // Skip if we're running in devMode and not in force mode
@@ -60,6 +64,7 @@ class HtmlcacheService extends Component
             return false;
         }
 
+        // skip if not enabled
         if ($settings->enableGeneral == false) {
             return false;
         }
@@ -90,12 +95,19 @@ class HtmlcacheService extends Component
         return true;
     }
     
+    /**
+     * Create the cache file
+     *
+     * @return void
+     */
     public function createCacheFile()
     {
         $uri = \Craft::$app->request->getParam('p');
         $siteId = \Craft::$app->getSites()->getCurrentSite()->id;
+        // check if valid to create the file
         if ($this->canCreateCacheFile() && http_response_code() == 200) {
             $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
+            // check if entry exists and start capturing content
             if ($cacheEntry) {
                 $content = ob_get_contents();
                 ob_end_clean();
@@ -106,15 +118,21 @@ class HtmlcacheService extends Component
                     fclose($fp);
                 }
                 else {
-                    self::log('HTML Cache could not write cache file "' . $file . '"');
+                    \Craft::info('HTML Cache could not write cache file "' . $file . '"');
                 }
                 echo $content;
             } else {
-                self::log('HTML Cache could not find cache entry for siteId: "' . $siteId . '" and uri: "' . $uri .'"');
+                \Craft::info('HTML Cache could not find cache entry for siteId: "' . $siteId . '" and uri: "' . $uri .'"');
             }
         }
     }
     
+    /**
+     * clear cache for given elementId
+     *
+     * @param integer $elementId
+     * @return boolean
+     */
     public function clearCacheFile($elementId)
     {
         // get all possible caches
@@ -129,7 +147,7 @@ class HtmlcacheService extends Component
         foreach ($caches as $cache) {
             $file = $this->getCacheFileName($cache->uid);
             if (file_exists($file)) {
-                unlink($file);
+                @unlink($file);
             }
         }
 
@@ -139,29 +157,91 @@ class HtmlcacheService extends Component
         return true;
     }
 
+    /**
+     * Clear all caches
+     *
+     * @return void
+     */
     public function clearCacheFiles()
     {
-        // @todo split between all/single cache file
-        foreach (glob($this->getCacheFileDirectory() . '*.html') as $file) {
-            unlink($file);
-        }
+        FileHelper::clearDirectory();
         HtmlCacheCache::deleteAll();
+    }
+
+    /**
+     * Get the filename path
+     *
+     * @param string $uid
+     * @return string
+     */
+    private function getCacheFileName($uid)
+    {
+        return $this->getDirectory() . $uid . '.html';
+    }
+
+    /**
+     * Get the directory path
+     *
+     * @return string
+     */
+    private function getDirectory()
+    {
+        // Fallback to default directory if no storage path defined
+        if (defined('CRAFT_STORAGE_PATH')) {
+            $basePath = CRAFT_STORAGE_PATH;
+        } else {
+            $basePath = CRAFT_BASE_PATH . DIRECTORY_SEPARATOR . 'storage';
+        }
+
+        return $basePath . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'htmlcache' . DIRECTORY_SEPARATOR;
+    }
+
+    /**
+     * Check cache and return it if exists
+     *
+     * @param string $uid
+     * @return mixed
+     */
+    private function checkCache($uid)
+    {
+        $file = $this->getCacheFileName($uid);
+        // check if file exists
+        if (file_exists($file)) {
+            if (file_exists($settingsFile = $this->getDirectory() . 'settings.json')) {
+                $settings = json_decode(file_get_contents($settingsFile), true);
+            } else {
+                $settings = ['cacheDuration' => 3600];
+            }
+            if (time() - ($fmt = filemtime($file)) >= $settings['cacheDuration']) {
+                unlink($file);
+                return false;
+            }
+            $content = file_get_contents($file);
+
+            // Check the content type
+            $isJson = false;
+            if (strlen($content) && ($content[0] == '[' || $content[0] == '{')) {
+                // JSON?
+                @json_decode($content);
+                if (json_last_error() == JSON_ERROR_NONE) {
+                    $isJson = true;
+                }
+            }
+            
+            // Add extra headers
+            if ($isJson) {
+                if ($direct) {
+                    header('Content-type:application/json');
+                }
+                echo $content;
+            } else {
+                if ($direct) {
+                    header('Content-type:text/html;charset=UTF-8');
+                }
+                echo $content;
+            }
+        }
         return true;
     }
-    
-    private function getCacheFileName($uid, $withDirectory = true)
-    {
-        return HtmlcacheAssets::filename($uid, $withDirectory);
-    }
-    
-    private function getCacheFileDirectory()
-    {
-        return HtmlcacheAssets::directory();
-    }
-    
-    public function log($error, $level = '')
-    {
-        // Firstly, store in plugin log file (use $level to control log level)
-        //HtmlcachePlugin::log(print_r($errors, true), $level, true);
-    }
+
 }

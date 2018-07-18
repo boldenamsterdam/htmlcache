@@ -1,8 +1,12 @@
 <?php
 /**
- * @link https://craftcms.com/
- * @copyright Copyright (c) Pixel & Tonic, Inc.
- * @license https://craftcms.github.io/license/
+ * HTML Cache plugin for Craft CMS 3.x
+ *
+ * HTML Cache Caches Record
+ *
+ * @link      http://www.bolden.nl
+ * @copyright Copyright (c) 2018 Bolden B.V.
+ * @author Klearchos Douvantzis
  */
 
 namespace bolden\htmlcache\records;
@@ -15,7 +19,7 @@ use craft\db\ActiveRecord;
  * @property int $id ID
  * @property int $siteId
  * @property string $uri
- * @author bolden
+
  */
 class HtmlCacheCache extends ActiveRecord
 {

@@ -2,10 +2,11 @@
 /**
  * HTML Cache plugin for Craft CMS 3.x
  *
- * HTML Cache
+ * HTML Cache Plugin
  *
  * @link      http://www.bolden.nl
  * @copyright Copyright (c) 2018 Bolden B.V.
+ * @author Klearchos Douvantzis
  */
 
 namespace bolden\htmlcache;
@@ -22,7 +23,6 @@ use craft\helpers\FileHelper;
 use craft\helpers\UrlHelper;
 use craft\events\RegisterUrlRulesEvent;
 use bolden\htmlcache\services\HtmlcacheService;
-use bolden\htmlcache\assets\HtmlcacheAssets;
 use bolden\htmlcache\models\Settings;
 
 use yii\base\Event;
@@ -113,22 +113,13 @@ class HtmlCache extends Plugin
      */
     public function setSettings(array $values)
     {
-        // HtmlcacheAssets::indexEnabled($values['enableIndex'] == 1 ? true : false);
-        
-        // Check if it actually worked
-        // if (stristr(file_get_contents($_SERVER['SCRIPT_FILENAME']), 'htmlcache') === false && $values['enableIndex'] == 1) {
-        // if (stristr(file_get_contents($_SERVER['SCRIPT_FILENAME']), 'htmlcache') === false) {
-        //     \Craft::$app->userSession->setError(Craft::t('The file ' . $_SERVER['SCRIPT_FILENAME'] . ' could not be edited'));
-        //     return false;
-        // }
-
         if (!empty($values['purgeCache'])) {
             $this->setComponents(
                 [
                     'htmlcacheService' => HtmlcacheService::class,
                 ]
             );
-            $this->htmlcacheService->clearCacheFiles();
+            $this->htmlcacheService->clearCacheFiles();                
         }
         // always reset value for purge cache
         $values['purgeCache'] = '';
@@ -136,15 +127,7 @@ class HtmlCache extends Plugin
     }
 
     /**
-     * Set our $plugin static property to this class so that it can be accessed via
-     * HtmlCache::$plugin
-     *
-     * Called after the plugin class is instantiated; do any one-time initialization
-     * here such as hooks and events.
-     *
-     * If you have a '/vendor/autoload.php' file, it will be loaded for you automatically;
-     * you do not need to load it in your init() method.
-     *
+     * Init plugin and initiate events
      */
     public function init()
     {
@@ -157,11 +140,15 @@ class HtmlCache extends Plugin
         );
 
         if ($this->isInstalled) {
+            // first check if there is a cache to serve
             $this->htmlcacheService->checkForCacheFile();
+
+            // after request send try and create the cache file
             Event::on(Response::class, Response::EVENT_AFTER_SEND, function (Event $event) {
                 $this->htmlcacheService->createCacheFile();
             });
 
+            // on every update of an element clear the caches related to the element
             Event::on(Elements::class, Elements::EVENT_AFTER_SAVE_ELEMENT, function (Event $event) {
                 $this->htmlcacheService->clearCacheFile($event->element->id);
             });
@@ -176,6 +163,7 @@ class HtmlCache extends Plugin
                         $siteId = \Craft::$app->getSites()->getCurrentSite()->id;
                         $elementId = $event->element->id;
                         
+                        // check if cache entry already exits otherwise create it
                         $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
                         if (!$cacheEntry) {
                             $cacheEntry = new HtmlCacheCache();
@@ -184,6 +172,7 @@ class HtmlCache extends Plugin
                             $cacheEntry->siteId = $siteId;                        
                             $cacheEntry->save();    
                         }
+                        // check if relation element is already added or create it
                         $cacheElement = HtmlCacheElement::findOne(['elementId' => $elementId, 'cacheId' => $cacheEntry->id]);
                         if (!$cacheElement) {
                             $cacheElement = new HtmlCacheElement();
@@ -196,7 +185,7 @@ class HtmlCache extends Plugin
             });
         }
         
-        // Do something after we're installed
+        // After install create the temp folder
         Event::on(
             Plugins::class,
             Plugins::EVENT_AFTER_INSTALL_PLUGIN,
@@ -209,19 +198,19 @@ class HtmlCache extends Plugin
             }
         );
 
-        // Do something before we're uninstalled
+        // Before uninstall clear all cache
         Event::on(
             Plugins::class,
             Plugins::EVENT_BEFORE_UNINSTALL_PLUGIN,
             function (PluginEvent $event) {
                 if ($event->plugin === $this) {
-                    // reset index file if needed
-                    // HtmlcacheAssets::indexEnabled(false);
+                    // clear all files
+                    $this->htmlcacheService->clearCacheFiles();
                 }
             }
         );
 
-        // Do something after we're uninstalled
+        // After uninstall remove the cache dir
         Event::on(
             Plugins::class,
             Plugins::EVENT_AFTER_UNINSTALL_PLUGIN,
