@@ -2,7 +2,7 @@
     "name": "bolden/htmlcache",
     "description": "HTML Cache",
     "type": "craft-plugin",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "keywords": [
         "craft",
         "cms",
@@ -18,7 +18,7 @@
     "authors": [
         {
             "name": "Bolden B.V.",
-            "homepage": "http://www.bolden.nl"
+            "homepage": "https://www.bolden.nl"
         }
     ],
     "require": {
@@ -35,6 +35,8 @@
         "schemaVersion": "1.0.0",
         "hasCpSettings": true,
         "hasCpSection": false,
-        "class": "bolden\\htmlcache\\HtmlCache"
+        "class": "bolden\\htmlcache\\HtmlCache",
+        "developer": "Bolden B.V.",
+        "developerUrl": "https://www.bolden.nl",
     }
 }
