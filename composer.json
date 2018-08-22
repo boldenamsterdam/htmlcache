@@ -1,6 +1,6 @@
 {
     "name": "bolden/htmlcache",
-    "description": "Craft CMS plugin. Cache pages to HTML and boost website performace",
+    "description": "Craft CMS plugin. Cache pages to HTML and boost website performance.",
     "type": "craft-plugin",
     "version": "1.0.3",
     "keywords": [
