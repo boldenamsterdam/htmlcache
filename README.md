@@ -20,5 +20,7 @@ Use the plugin settings to configure it.
 
 HTML Cache has a settings page where you can enable/disable cache.
 
+
 Brought to you by [Bolden B.V.](http://www.bolden.nl)
 
+Based on https://github.com/craftapi/htmlcache
