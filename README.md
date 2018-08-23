@@ -2,6 +2,8 @@
 
 Cache pages to HTML and boost website performance.
 
+![img](https://www.bolden.nl/content/bolden_rocket_rectangle.jpg)
+
 This plugin generates static HTML files from your dynamic Craft CMS project. After a HTML file is generated, your webserver will serve that file instead of processing heavier and slower PHP scripts.
 
 99% of your visitors will be served static HTML files. A cached file can be served thousands of times. That 1% could be a POST request (like AJAX forms) and btw:
