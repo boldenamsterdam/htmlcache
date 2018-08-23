@@ -168,12 +168,14 @@ class HtmlCache extends Plugin
 
             // always reset purge cache value
             Event::on(Plugin::class, Plugin::EVENT_BEFORE_SAVE_SETTINGS, function($event){
-                $settings = $event->sender->getSettings();
-                if ($settings->purgeCache === '1') {
-                    $this->htmlcacheService->clearCacheFiles();
+                if ($event->sender === $this) {
+                    $settings = $event->sender->getSettings();
+                    if ($settings->purgeCache === '1') {
+                        $this->htmlcacheService->clearCacheFiles();
+                    }
+                    // always reset value for purge cache
+                    $event->sender->setSettings(['purgeCache' => '']);
                 }
-                // always reset value for purge cache
-                $event->sender->setSettings(['purgeCache' => '']);
             });
         }
         
