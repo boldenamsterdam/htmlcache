@@ -118,15 +118,18 @@ class HtmlcacheService extends Component
      *
      * @return boolean
      */
-    private function isElementApiRoute() {   
-        $elementApiRoutes = \Craft::$app->getPlugins()->getPlugin('element-api')->getSettings()->endpoints;
-        $routes = array_keys($elementApiRoutes);
-        foreach ($routes as $route) {
-            // form the correct expression
-            $route = preg_replace('~\<.*?:(.*?)\>~', '$1', $route);
-            $found = preg_match('~' . $route . '~', $this->uri);
-            if ($found) {
-                return true;
+    private function isElementApiRoute() {
+        $plugin = \Craft::$app->getPlugins()->getPlugin('element-api');
+        if ($plugin) {
+            $elementApiRoutes = $plugin->getSettings()->endpoints;
+            $routes = array_keys($elementApiRoutes);
+            foreach ($routes as $route) {
+                // form the correct expression
+                $route = preg_replace('~\<.*?:(.*?)\>~', '$1', $route);
+                $found = preg_match('~' . $route . '~', $this->uri);
+                if ($found) {
+                    return true;
+                }
             }
         }
         return false;

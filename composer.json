@@ -2,7 +2,7 @@
     "name": "bolden/htmlcache",
     "description": "Craft CMS plugin. Cache pages to HTML and boost website performance.",
     "type": "craft-plugin",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "keywords": [
         "craft",
         "cms",
@@ -15,18 +15,16 @@
         "issues": "https://github.com/boldenamsterdam/htmlcache/issues"
     },
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Bolden B.V.",
-            "homepage": "https://www.bolden.nl"
-        }
-    ],
+    "authors": [{
+        "name": "Bolden B.V.",
+        "homepage": "https://www.bolden.nl"
+    }],
     "require": {
         "craftcms/cms": "^3.0.0"
     },
     "autoload": {
         "psr-4": {
-          "bolden\\htmlcache\\": "src/"
+            "bolden\\htmlcache\\": "src/"
         }
     },
     "extra": {
