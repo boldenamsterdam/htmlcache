@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTML Cache plugin for Craft CMS 3.x
  *
@@ -68,7 +69,7 @@ class HtmlCache extends Plugin
 
     // Public Methods
     // =========================================================================
-    
+
     /**
      * Returns whether the plugin should get its own tab in the CP header.
      *
@@ -98,7 +99,7 @@ class HtmlCache extends Plugin
      * @throws \Twig_Error_Loader
      * @throws \RuntimeException
      */
-    protected function settingsHtml(): string
+    protected function settingsHtml() : string
     {
         return \Craft::$app->getView()->renderTemplate(
             'html-cache/_settings',
@@ -114,14 +115,14 @@ class HtmlCache extends Plugin
     public function init()
     {
         self::$plugin = $this;
-        
-        $this->setComponents(
-            [
-                'htmlcacheService' => HtmlcacheService::class,
-            ]
-        );
 
-        if ($this->isInstalled) {
+        // ignore console requests
+        if ($this->isInstalled && !\Craft::$app->request->getIsConsoleRequest()) {
+            $this->setComponents(
+                [
+                    'htmlcacheService' => HtmlcacheService::class,
+                ]
+            );
             // first check if there is a cache to serve
             $this->htmlcacheService->checkForCacheFile();
 
@@ -136,9 +137,9 @@ class HtmlCache extends Plugin
             });
 
             // on populated element put to relation table
-            Event::on(ElementQuery::class, ElementQuery::EVENT_AFTER_POPULATE_ELEMENT, function($event){
+            Event::on(ElementQuery::class, ElementQuery::EVENT_AFTER_POPULATE_ELEMENT, function ($event) {
                 // procceed only if it should be created
-                if($this->htmlcacheService->canCreateCacheFile()) {
+                if ($this->htmlcacheService->canCreateCacheFile()) {
                     $elementClass = get_class($event->element);
                     if (!in_array($elementClass, [User::class, GlobalSet::class])) {
                         $uri = \Craft::$app->request->getParam('p', '');
@@ -151,8 +152,8 @@ class HtmlCache extends Plugin
                             $cacheEntry = new HtmlCacheCache();
                             $cacheEntry->id = null;
                             $cacheEntry->uri = $uri;
-                            $cacheEntry->siteId = $siteId;                        
-                            $cacheEntry->save();    
+                            $cacheEntry->siteId = $siteId;
+                            $cacheEntry->save();
                         }
                         // check if relation element is already added or create it
                         $cacheElement = HtmlCacheElement::findOne(['elementId' => $elementId, 'cacheId' => $cacheEntry->id]);
@@ -167,7 +168,7 @@ class HtmlCache extends Plugin
             });
 
             // always reset purge cache value
-            Event::on(Plugin::class, Plugin::EVENT_BEFORE_SAVE_SETTINGS, function($event){
+            Event::on(Plugin::class, Plugin::EVENT_BEFORE_SAVE_SETTINGS, function ($event) {
                 if ($event->sender === $this) {
                     $settings = $event->sender->getSettings();
                     if ($settings->purgeCache === '1') {
@@ -221,7 +222,7 @@ class HtmlCache extends Plugin
     
     // Protected Methods
     // =========================================================================
-    
+
 }
             
             
