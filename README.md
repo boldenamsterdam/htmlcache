@@ -37,6 +37,7 @@ If the plugin works correctly you will see the cached files in storage/runtime/h
 ## FAQ
 
 Q: Are all cache files deleted when updating an entry, or only the ones with a relation?
+
 A: Only related cache files will be deleted after an update.
 
 
