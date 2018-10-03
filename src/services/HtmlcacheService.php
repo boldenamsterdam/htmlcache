@@ -251,7 +251,7 @@ class HtmlcacheService extends Component
             unlink($file);
             return false;
         }
-        echo file_get_contents($file);
+        \Yii::$app->response->data = file_get_contents($file);
     }
 
 }
