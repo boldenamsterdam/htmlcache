@@ -158,7 +158,7 @@ class HtmlcacheService extends Component
                 else {
                     \Craft::info('HTML Cache could not write cache file "' . $file . '"');
                 }
-                echo $content;
+                \Yii::$app->response->data = $content;
             } else {
                 \Craft::info('HTML Cache could not find cache entry for siteId: "' . $this->siteId . '" and uri: "' . $this->uri .'"');
             }
@@ -251,7 +251,7 @@ class HtmlcacheService extends Component
             unlink($file);
             return false;
         }
-        echo file_get_contents($file);
+        \Yii::$app->response->data = file_get_contents($file);
     }
 
 }
