@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTML Cache plugin for Craft CMS 3.x
  *
@@ -34,7 +35,8 @@ class HtmlcacheService extends Component
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->uri = \Craft::$app->request->getParam('p', '');
         $this->siteId = \Craft::$app->getSites()->getCurrentSite()->id;
     }
@@ -64,7 +66,7 @@ class HtmlcacheService extends Component
         // Turn output buffering on
         ob_start();
     }
-    
+
     /**
      * Check if creation of file is allowed
      *
@@ -118,7 +120,8 @@ class HtmlcacheService extends Component
      *
      * @return boolean
      */
-    private function isElementApiRoute() {
+    private function isElementApiRoute()
+    {
         $plugin = \Craft::$app->getPlugins()->getPlugin('element-api');
         if ($plugin) {
             $elementApiRoutes = $plugin->getSettings()->endpoints;
@@ -133,8 +136,8 @@ class HtmlcacheService extends Component
             }
         }
         return false;
-    }    
-    
+    }
+
     /**
      * Create the cache file
      *
@@ -154,17 +157,16 @@ class HtmlcacheService extends Component
                 if ($fp) {
                     fwrite($fp, $content);
                     fclose($fp);
-                }
-                else {
+                } else {
                     \Craft::info('HTML Cache could not write cache file "' . $file . '"');
                 }
-                \Yii::$app->response->data = $content;
+                \Craft::$app->response->data = $content;
             } else {
-                \Craft::info('HTML Cache could not find cache entry for siteId: "' . $this->siteId . '" and uri: "' . $this->uri .'"');
+                \Craft::info('HTML Cache could not find cache entry for siteId: "' . $this->siteId . '" and uri: "' . $this->uri . '"');
             }
         }
     }
-    
+
     /**
      * clear cache for given elementId
      *
@@ -176,7 +178,7 @@ class HtmlcacheService extends Component
         // get all possible caches
         $elements = HtmlCacheElement::findAll(['elementId' => $elementId]);
         // \craft::Dd($elements);
-        $cacheIds = array_map(function($el) {
+        $cacheIds = array_map(function ($el) {
             return $el->cacheId;
         }, $elements);
 
@@ -191,7 +193,7 @@ class HtmlcacheService extends Component
 
 
         // delete caches for related entry
-        HtmlCacheCache::deleteAll(['id'=> $cacheIds]);
+        HtmlCacheCache::deleteAll(['id' => $cacheIds]);
         return true;
     }
 
@@ -251,7 +253,7 @@ class HtmlcacheService extends Component
             unlink($file);
             return false;
         }
-        \Yii::$app->response->data = file_get_contents($file);
+        \Craft::$app->response->data = file_get_contents($file);
     }
 
 }
