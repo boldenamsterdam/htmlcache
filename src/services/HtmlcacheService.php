@@ -151,7 +151,6 @@ class HtmlcacheService extends Component
             // check if entry exists and start capturing content
             if ($cacheEntry) {
                 $content = ob_get_contents();
-                ob_end_clean();
                 $file = $this->getCacheFileName($cacheEntry->uid);
                 $fp = fopen($file, 'w+');
                 if ($fp) {
@@ -160,7 +159,6 @@ class HtmlcacheService extends Component
                 } else {
                     \Craft::info('HTML Cache could not write cache file "' . $file . '"');
                 }
-                \Craft::$app->response->data = $content;
             } else {
                 \Craft::info('HTML Cache could not find cache entry for siteId: "' . $this->siteId . '" and uri: "' . $this->uri . '"');
             }
