@@ -20,6 +20,6 @@ Fix error when saving settings under certain scenario's
 ### Fixed
 Fix error on craft installations without element-api plugin installed
 
-## 1.0.5 - 2018-10-03
+## 1.0.6 - 2018-10-03
 ### Fixed
 Fix error headers already sent when devMode is enabled (thanks [bragle] (https://github.com/bragle))
