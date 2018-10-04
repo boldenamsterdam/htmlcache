@@ -34,6 +34,11 @@ HTML Cache has a settings page where you can enable/disable it and flush the cac
 
 If the plugin works correctly you will see the cached files in storage/runtime/htmlcache/ folder. To check the performance improvement please use the browser inspector. There you will be able to see that the loading times are improved.
 
+## FAQ
+
+**Q: Are all cache files deleted when updating an entry, or only the ones with a relation?**  
+**A:** Only related cache files will be deleted after an update.
+
 
 ## Credits
 
