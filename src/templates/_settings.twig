@@ -27,6 +27,15 @@
     on:           settings.forceOn
 }) }}
 
+{{ forms.lightswitchField({
+    label:        "Optimize Cached Content" | t,
+    id:           'optimizeContent',
+    name:         'optimizeContent',
+    instructions: "Tries to optimize content by removing whitespaces" | t,
+    errors:       settings.getErrors('optimizeContent'),
+    on:           settings.optimizeContent
+}) }}
+
 {{ forms.textField({
     label:        "Default Cache Expiration time" | t,
     id:           'cacheDuration',
