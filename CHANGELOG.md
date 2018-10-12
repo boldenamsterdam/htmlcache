@@ -23,3 +23,8 @@ Fix error on craft installations without element-api plugin installed
 ## 1.0.6 - 2018-10-03
 ### Fixed
 Fix error headers already sent when devMode is enabled (thanks [bragle] (https://github.com/bragle))
+
+## 1.0.7 - 2018-10-12
+### Updated
+Added new optimizedContent which removes whitespaces from cached file and therefore less size. 
+Fix updating cache element (thanks [bragle] (https://github.com/bragle))
