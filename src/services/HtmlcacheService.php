@@ -31,6 +31,7 @@ class HtmlcacheService extends Component
 {
     private $uri;
     private $siteId;
+    private $settings;
 
     /**
      * Constructor
@@ -39,6 +40,7 @@ class HtmlcacheService extends Component
     {
         $this->uri = \Craft::$app->request->getParam('p', '');
         $this->siteId = \Craft::$app->getSites()->getCurrentSite()->id;
+        $this->settings = HtmlCache::getInstance()->getSettings();
     }
 
     /**
@@ -75,18 +77,17 @@ class HtmlcacheService extends Component
     public function canCreateCacheFile()
     {
         // Skip if we're running in devMode and not in force mode
-        $settings = HtmlCache::getInstance()->getSettings();
-        if (\Craft::$app->config->general->devMode === true && $settings->forceOn == false) {
+        if (\Craft::$app->config->general->devMode === true && $this->settings->forceOn == false) {
             return false;
         }
 
         // skip if not enabled
-        if ($settings->enableGeneral == false) {
+        if ($this->settings->enableGeneral == false) {
             return false;
         }
         
         // Skip if system is not on and not in force mode
-        if (!\Craft::$app->getIsSystemOn() && $settings->forceOn == false) {
+        if (!\Craft::$app->getIsSystemOn() && $this->settings->forceOn == false) {
             return false;
         }
 
@@ -151,7 +152,9 @@ class HtmlcacheService extends Component
             // check if entry exists and start capturing content
             if ($cacheEntry) {
                 $content = ob_get_contents();
-                ob_end_clean();
+                if($this->settings->optimizeContent){
+                    $content = implode("\n", array_map('trim', explode("\n", $content)));
+                }
                 $file = $this->getCacheFileName($cacheEntry->uid);
                 $fp = fopen($file, 'w+');
                 if ($fp) {
@@ -160,7 +163,6 @@ class HtmlcacheService extends Component
                 } else {
                     \Craft::info('HTML Cache could not write cache file "' . $file . '"');
                 }
-                \Craft::$app->response->data = $content;
             } else {
                 \Craft::info('HTML Cache could not find cache entry for siteId: "' . $this->siteId . '" and uri: "' . $this->uri . '"');
             }
