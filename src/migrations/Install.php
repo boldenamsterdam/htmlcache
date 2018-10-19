@@ -29,8 +29,8 @@ class Install extends Migration
      */
     public function safeUp()
     {
-        $this->dropTableIfExists('{{%htmlcache_caches%}}');
-        $this->dropTableIfExists('{{%htmlcache_elements%}}');
+        $this->dropTableIfExists('{{%htmlcache_caches}}');
+        $this->dropTableIfExists('{{%htmlcache_elements}}');
         
         // create table caches
         $columns = [
@@ -41,9 +41,9 @@ class Install extends Migration
             'dateUpdated' => $this->dateTime()->notNull(),
             'uid' => $this->uid()
         ];
-        $this->createTable('{{%htmlcache_caches%}}', $columns);
-        $this->createIndex('htmlcache_caches_uri_siteId_idx', '{{%htmlcache_caches%}}', ['uri', 'siteId'], true);
-        $this->addForeignKey('htmlcache_caches_siteId_fk', '{{%htmlcache_caches%}}', ['siteId'], '{{%sites%}}', ['id'], 'CASCADE');
+        $this->createTable('{{%htmlcache_caches}}', $columns);
+        $this->createIndex('htmlcache_caches_uri_siteId_idx', '{{%htmlcache_caches}}', ['uri', 'siteId'], true);
+        $this->addForeignKey('htmlcache_caches_siteId_fk', '{{%htmlcache_caches}}', ['siteId'], '{{%sites%}}', ['id'], 'CASCADE');
 
         // create table elements
         $columns = [
@@ -53,10 +53,10 @@ class Install extends Migration
             'dateUpdated' => $this->dateTime()->notNull(),
             'uid' => $this->uid()
         ];
-        $this->createTable('{{%htmlcache_elements%}}', $columns);
-        $this->createIndex('htmlcache_caches_elementId_cacheId_idx', '{{%htmlcache_elements%}}', ['elementId', 'cacheId'], true);
-        $this->addForeignKey('htmlcache_elements_elementId_fk', '{{%htmlcache_elements%}}', ['elementId'], '{{%elements%}}', ['id'], 'CASCADE');
-        $this->addForeignKey('htmlcache_elements_cacheId_fk', '{{%htmlcache_elements%}}', ['cacheId'], '{{%htmlcache_caches%}}', ['id'], 'CASCADE');
+        $this->createTable('{{%htmlcache_elements}}', $columns);
+        $this->createIndex('htmlcache_caches_elementId_cacheId_idx', '{{%htmlcache_elements}}', ['elementId', 'cacheId'], true);
+        $this->addForeignKey('htmlcache_elements_elementId_fk', '{{%htmlcache_elements}}', ['elementId'], '{{%htmlcache_elements%}}', ['id'], 'CASCADE');
+        $this->addForeignKey('htmlcache_elements_cacheId_fk', '{{%htmlcache_elements}}', ['cacheId'], '{{%htmlcache_caches}}', ['id'], 'CASCADE');
     }
 
     /**
@@ -64,7 +64,7 @@ class Install extends Migration
      */
     public function safeDown()
     {
-        $this->dropTableIfExists('{{%htmlcache_elements%}}');
-        $this->dropTableIfExists('{{%htmlcache_caches%}}');
+        $this->dropTableIfExists('{{%htmlcache_elements}}');
+        $this->dropTableIfExists('{{%htmlcache_caches}}');
     }
 }
