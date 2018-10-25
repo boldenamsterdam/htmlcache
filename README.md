@@ -38,6 +38,8 @@ If the plugin works correctly you will see the cached files in storage/runtime/h
 
 **Q: Are all cache files deleted when updating an entry, or only the ones with a relation?**  
 **A:** Only related cache files will be deleted after an update.
+**Q: The installation fails and plugin does not work. **  
+**A:** Make sure that the folder `storage/runtime/htmlcache` is created and there are read/write permissions.
 
 
 ## Credits
