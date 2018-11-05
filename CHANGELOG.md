@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.9 - 2018-11-05
+
+### Updated
+- Icon has been updated
+
 ## 1.0.8 - 2018-10-24
 
 ### Fixed
