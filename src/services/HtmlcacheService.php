@@ -60,9 +60,10 @@ class HtmlcacheService extends Component
         if ($cacheEntry) {
             $file = $this->getCacheFileName($cacheEntry->uid);
             if (file_exists($file)) {
-                // load cache
-                $this->loadCache($file);
-                return \Craft::$app->end();
+                // load cache - may return false if cache has expired
+                if ($this->loadCache($file)) {
+                    return \Craft::$app->end();
+                }
             }
         }
         // Turn output buffering on
@@ -256,6 +257,7 @@ class HtmlcacheService extends Component
             return false;
         }
         \Craft::$app->response->data = file_get_contents($file);
+        return true;
     }
 
 }
