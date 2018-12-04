@@ -247,7 +247,9 @@ class HtmlcacheService extends Component
      */
     private function loadCache($file)
     {
-        if (!empty($this->settings->cacheDuration)) {
+        if (file_exists($settingsFile = $this->getDirectory() . 'settings.json')) {
+            $settings = json_decode(file_get_contents($settingsFile), true);
+        } elseif (!empty($this->settings->cacheDuration)) {
             $settings = ['cacheDuration' => $this->settings->cacheDuration];
         } else {
             $settings = ['cacheDuration' => 3600];
