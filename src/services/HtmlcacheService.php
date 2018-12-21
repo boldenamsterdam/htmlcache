@@ -106,8 +106,12 @@ class HtmlcacheService extends Component
         if (\Craft::$app->request->getIsLivePreview()) {
             return false;
         }
-        // Skip if it's a post/ajax request
+        // Skip if it's a post request
         if (!\Craft::$app->request->getIsGet()) {
+            return false;
+        }
+        // Skip if it's an ajax request
+        if (\Craft::$app->request->getIsAjax()) {
             return false;
         }
         // Skip if route from element api
