@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.12 - 2018-12-27
+
+### Updated
+- Skip cache if request is an ajax request.
+
 ## 1.0.11 - 2018-12-05
 
 ### Added
