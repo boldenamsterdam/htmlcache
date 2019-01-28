@@ -55,7 +55,7 @@ class Install extends Migration
         ];
         $this->createTable('{{%htmlcache_elements}}', $columns);
         $this->createIndex('htmlcache_caches_elementId_cacheId_idx', '{{%htmlcache_elements}}', ['elementId', 'cacheId'], true);
-        $this->addForeignKey('htmlcache_elements_elementId_fk', '{{%htmlcache_elements}}', ['elementId'], '{{%htmlcache_elements}}', ['id'], 'CASCADE');
+        $this->addForeignKey('htmlcache_elements_elementId_fk', '{{%htmlcache_elements}}', ['elementId'], '{{%elements}}', ['id'], 'CASCADE');
         $this->addForeignKey('htmlcache_elements_cacheId_fk', '{{%htmlcache_elements}}', ['cacheId'], '{{%htmlcache_caches}}', ['id'], 'CASCADE');
     }
 
