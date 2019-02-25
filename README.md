@@ -2,7 +2,7 @@
 
 Cache pages to HTML and boost website performance.
 
-![img](https://www.bolden.nl/uploads/body/day/Bolden_rocket_rectangle.jpg)
+![img](https://www.bolden.nl/uploads/bolden-craft-html-cache.jpg)
 
 This plugin generates static HTML files from your dynamic Craft CMS project. After a HTML file is generated, your webserver will serve that file instead of processing heavier and slower PHP scripts.
 
@@ -44,6 +44,6 @@ If the plugin works correctly you will see the cached files in storage/runtime/h
 
 ## Credits
 
-Made with ❤️ by [Bolden](http://www.bolden.nl) – It's free to use, but if you insist 😄 donate [here](https://www.paypal.me/boldenamsterdam)
+Made with ❤️ by Bolden – free to use and feedback is much appreciated!
 
 Based – but rewritten, on the HTML Cache by CraftAPI in 2016
