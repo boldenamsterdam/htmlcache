@@ -52,3 +52,14 @@
     instructions: "Purge all current cached files" | t,
     on:           0,
 }) }}
+
+{{ forms.elementSelectField({
+    label:          'Excluded entries' | t,
+    instructions:   'Entries to be excluded from being cached' | t,
+    selectionLabel: 'Add to excludes' | t,
+    name:           'excludedEntries',
+    id:             'excludedEntries',
+    elementType:    'craft\\elements\\Entry',
+    elements:       settings.excludedEntries is not empty ? craft.entries().id(settings.excludedEntries).status(null).all() : null,
+    errors:         settings.getErrors('excludedEntries')
+}) }}
