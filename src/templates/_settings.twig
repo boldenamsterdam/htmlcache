@@ -52,3 +52,37 @@
     instructions: "Purge all current cached files" | t,
     on:           0,
 }) }}
+
+{% set siteOptions = [{
+    label: 'All sites' | t,
+    value: '-1',
+}] %}
+{% for site in craft.app.sites.allSites() %}
+    {% set siteOptions = siteOptions | merge([{
+        label: site.name,
+        value: site.id,
+    }]) %}
+{% endfor %}
+
+{{ forms.editableTableField({
+    label:          'Excluded URL paths' | t,
+    instructions:   'Paths to be excluded from being cached' | t,
+    name:           'excludedUrlPaths',
+    id:             'excludedUrlPaths',
+    cols:           [
+                        {
+                            heading: 'Excluded paths' | t,
+                            info: 'Enter URL paths without the <span class="code">siteURL</span> part as they are returned by <span class="code">\Craft::$app->request->getFullPath()</span>, like "any/page" insteadof "https://example.com/site-specific/path/any/page".' | t,
+                            type: 'singleline',
+                            placeholder: 'path/to/excluded/page',
+                        },
+                        {
+                            heading: 'Multi-site' | t,
+                            info: 'Choose either if the configured path shall always be excluded from caches regardless of which multi-site is requested or if the exclusion of given path is dependant on the requested site.' | t,
+                            type: 'select',
+                            options: siteOptions,
+                        },
+                    ],
+    rows:           settings.excludedUrlPaths,
+    errors:         settings.getErrors('excludedUrlPaths')
+}) }}
