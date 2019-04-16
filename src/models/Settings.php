@@ -19,7 +19,6 @@ class Settings extends \craft\base\Model
     public $optimizeContent = 0;
     public $cacheDuration = 3600;
     public $purgeCache = 0;
-    public $excludedEntries = [];
 
     public function rules() {
         return [
