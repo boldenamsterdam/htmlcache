@@ -166,7 +166,7 @@ class HtmlcacheService extends Component
             $siteId = intval(next($exclude));
 
             // check if requested path is one of those of the settings
-            if ($requestedPath == $path || preg_match('/' . $path . '/', $requestedPath)) {
+            if ($requestedPath == $path || preg_match('@' . $path . '@', $requestedPath)) {
                 // and if requested site either corresponds to the exclude setting or if it's unimportant at all
                 if ($requestedSiteId == $siteId || $siteId < 0) {
                     return true;
