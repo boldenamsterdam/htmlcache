@@ -59,7 +59,7 @@
 }] %}
 {% for site in craft.app.sites.allSites() %}
     {% set siteOptions = siteOptions | merge([{
-        label: site.name,
+        label: site.name ~ ' (' ~ site.language ~ ')',
         value: site.id,
     }]) %}
 {% endfor %}
