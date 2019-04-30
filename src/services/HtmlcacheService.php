@@ -55,7 +55,7 @@ class HtmlcacheService extends Component
             return;
         }
         $cacheEntry = HtmlCacheCache::findOne(['uri' => $this->uri, 'siteId' => $this->siteId]);
-        
+
         // check if cache exists
         if ($cacheEntry) {
             $file = $this->getCacheFileName($cacheEntry->uid);
@@ -86,7 +86,7 @@ class HtmlcacheService extends Component
         if ($this->settings->enableGeneral == false) {
             return false;
         }
-        
+
         // Skip if system is not on and not in force mode
         if (!\Craft::$app->getIsSystemOn() && $this->settings->forceOn == false) {
             return false;
@@ -118,6 +118,11 @@ class HtmlcacheService extends Component
         if ($this->isElementApiRoute()) {
             return false;
         }
+        // Skip if currently requested URL path is excluded
+        if ($this->isPathExcluded()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -141,6 +146,34 @@ class HtmlcacheService extends Component
                 }
             }
         }
+        return false;
+    }
+
+    /**
+     * Check if currently requested URL path has been added to list of excluded paths
+     *
+     * @return bool
+     */
+    private function isPathExcluded()
+    {
+        // determine currently requested URL path and the multi-site ID
+        $requestedPath = \Craft::$app->request->getFullPath();
+        $requestedSiteId = \Craft::$app->getSites()->getCurrentSite()->id;
+
+        // compare with excluded paths and sites from the settings
+        foreach ($this->settings->excludedUrlPaths as $exclude) {
+            $path = reset($exclude);
+            $siteId = intval(next($exclude));
+
+            // check if requested path is one of those of the settings
+            if ($requestedPath == $path || preg_match('@' . $path . '@', $requestedPath)) {
+                // and if requested site either corresponds to the exclude setting or if it's unimportant at all
+                if ($requestedSiteId == $siteId || $siteId < 0) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
