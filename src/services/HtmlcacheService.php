@@ -161,15 +161,17 @@ class HtmlcacheService extends Component
         $requestedSiteId = \Craft::$app->getSites()->getCurrentSite()->id;
 
         // compare with excluded paths and sites from the settings
-        foreach ($this->settings->excludedUrlPaths as $exclude) {
-            $path = reset($exclude);
-            $siteId = intval(next($exclude));
+        if (!empty($this->settings->excludedUrlPaths)) {
+            foreach ($this->settings->excludedUrlPaths as $exclude) {
+                $path = reset($exclude);
+                $siteId = intval(next($exclude));
 
-            // check if requested path is one of those of the settings
-            if ($requestedPath == $path || preg_match('@' . $path . '@', $requestedPath)) {
-                // and if requested site either corresponds to the exclude setting or if it's unimportant at all
-                if ($requestedSiteId == $siteId || $siteId < 0) {
-                    return true;
+                // check if requested path is one of those of the settings
+                if ($requestedPath == $path || preg_match('@' . $path . '@', $requestedPath)) {
+                    // and if requested site either corresponds to the exclude setting or if it's unimportant at all
+                    if ($requestedSiteId == $siteId || $siteId < 0) {
+                        return true;
+                    }
                 }
             }
         }

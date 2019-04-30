@@ -25,7 +25,7 @@ To work in DEV-mode: use the force option in the settings.
 
 ## Configuring HTML Cache
 
-If the plugin is enabled it works out of the box and no special cache tags are needed. If DevMode in Craft CMS is enabled, you will have to force enable the plugin by enabling the 'Force On' plugin setting. 
+If the plugin is enabled it works out of the box and no special cache tags are needed. If DevMode in Craft CMS is enabled, you will have to force enable the plugin by enabling the 'Force On' plugin setting. You can also exclude url path(s) from being cached.
 
 
 ## Using HTML Cache
