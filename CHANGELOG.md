@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.15 - 2019-07-09
+
+### Updated
+- Update svg icon
+
 ## 1.0.14 - 2019-04-30
 
 ### Fixed
