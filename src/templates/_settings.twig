@@ -46,6 +46,15 @@
 }) }}
 
 {{ forms.lightswitchField({
+    label:        "Disable Preview Cache" | t,
+    id:           'disablePreviewCache',
+    name:         'disablePreviewCache',
+    instructions: "Disable the caching of a preview url, this prevents a draft from being publicly accessible" | t,
+    errors:       settings.getErrors('disablePreviewCache'),
+    on:           settings.disablePreviewCache
+}) }}
+
+{{ forms.lightswitchField({
     label:        "Purge Cache now?" | t,
     id:           'purgeCache',
     name:         'purgeCache',
