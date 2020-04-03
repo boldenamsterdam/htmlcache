@@ -38,7 +38,7 @@ class HtmlcacheService extends Component
      */
     public function __construct()
     {
-        $this->uri = \Craft::$app->request->getParam('p', '');
+        $this->uri = \Craft::$app->request->getPathInfo() ?: '__HOME__';
         $this->siteId = \Craft::$app->getSites()->getCurrentSite()->id;
         $this->settings = HtmlCache::getInstance()->getSettings();
     }
