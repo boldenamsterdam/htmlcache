@@ -38,7 +38,7 @@ class HtmlcacheService extends Component
      */
     public function __construct()
     {
-        $this->uri = \Craft::$app->request->getPathInfo() ?: '__HOME__';
+        $this->uri = \Craft::$app->getRequest()->getPathInfo() ?: '__HOME__';
         $this->siteId = \Craft::$app->getSites()->getCurrentSite()->id;
         $this->settings = HtmlCache::getInstance()->getSettings();
     }
@@ -78,7 +78,7 @@ class HtmlcacheService extends Component
     public function canCreateCacheFile()
     {
         // Skip if it's a preview url
-		if ($this->settings->disablePreviewCache && Craft::$app->request->getIsPreview()) {
+		if ($this->settings->disablePreviewCache && Craft::$app->getRequest()->getIsPreview()) {
 			return false;
         }
         
@@ -98,25 +98,25 @@ class HtmlcacheService extends Component
         }
 
         // Skip if it's a CP Request
-        if (\Craft::$app->request->getIsCpRequest()) {
+        if (\Craft::$app->getRequest()->getIsCpRequest()) {
             return false;
         }
 
         // Skip if it's an action Request
-        if (\Craft::$app->request->getIsActionRequest()) {
+        if (\Craft::$app->getRequest()->getIsActionRequest()) {
             return false;
         }
 
         // Skip if it's a preview request
-        if (\Craft::$app->request->getIsLivePreview()) {
+        if (\Craft::$app->getRequest()->getIsLivePreview()) {
             return false;
         }
         // Skip if it's a post request
-        if (!\Craft::$app->request->getIsGet()) {
+        if (!\Craft::$app->getRequest()->getIsGet()) {
             return false;
         }
         // Skip if it's an ajax request
-        if (\Craft::$app->request->getIsAjax()) {
+        if (\Craft::$app->getRequest()->getIsAjax()) {
             return false;
         }
         // Skip if route from element api
@@ -162,7 +162,7 @@ class HtmlcacheService extends Component
     private function isPathExcluded()
     {
         // determine currently requested URL path and the multi-site ID
-        $requestedPath = \Craft::$app->request->getFullPath();
+        $requestedPath = \Craft::$app->getRequest()->getFullPath();
         $requestedSiteId = \Craft::$app->getSites()->getCurrentSite()->id;
 
         // compare with excluded paths and sites from the settings

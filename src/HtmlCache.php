@@ -117,7 +117,7 @@ class HtmlCache extends Plugin
         self::$plugin = $this;
 
         // ignore console requests
-        if ($this->isInstalled && !\Craft::$app->request->getIsConsoleRequest()) {
+        if ($this->isInstalled && !\Craft::$app->getRequest()->getIsConsoleRequest()) {
             $this->setComponents(
                 [
                     'htmlcacheService' => HtmlcacheService::class,
@@ -142,14 +142,14 @@ class HtmlCache extends Plugin
                 if ($this->htmlcacheService->canCreateCacheFile()) {
                     $elementClass = get_class($event->element);
                     if (!in_array($elementClass, [User::class, GlobalSet::class])) {
-                        $uri = \Craft::$app->request->getPathInfo() ?: $event->element->uri;
+                        $uri = \Craft::$app->getRequest()->getPathInfo() ?: $event->element->uri;
                         $siteId = \Craft::$app->getSites()->getCurrentSite()->id;
                         $elementId = $event->element->id;
 
                         if (!$uri || strlen($uri) === 0) {
                             return;
                         }
-                        
+
                         // check if cache entry already exits otherwise create it
                         $cacheEntry = HtmlCacheCache::findOne(['uri' => $uri, 'siteId' => $siteId]);
                         if (!$cacheEntry) {
