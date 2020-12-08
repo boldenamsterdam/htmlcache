@@ -1,0 +1,12 @@
+{% import "_includes/forms" as forms %}
+
+<h1>{{ "Clear Caches"|t('html-cache') }}</h1>
+
+<form id="db-backup" class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('html-cache/cache/clear-caches') }}
+    {{ csrfInput() }}
+    <div class="buttons">
+        <input type="submit" class="btn submit" value="{{ "Clear Cache"|t('html-cache') }}" />
+        <div class="utility-status"></div>
+    </div>
+</form>

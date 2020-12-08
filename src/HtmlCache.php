@@ -19,12 +19,15 @@ use craft\web\Response;
 use craft\services\Plugins;
 use craft\events\PluginEvent;
 use craft\services\Elements;
+use craft\services\Utilities;
 use craft\web\UrlManager;
 use craft\helpers\FileHelper;
 use craft\helpers\UrlHelper;
 use craft\events\RegisterUrlRulesEvent;
 use bolden\htmlcache\services\HtmlcacheService;
 use bolden\htmlcache\models\Settings;
+use bolden\htmlcache\utilities\CacheUtility;
+
 
 use yii\base\Event;
 use craft\elements\db\ElementQuery;
@@ -35,6 +38,7 @@ use bolden\htmlcache\records\HtmlCacheCache;
 use bolden\htmlcache\records\HtmlCacheElement;
 use craft\elements\User;
 use craft\elements\GlobalSet;
+use craft\events\RegisterComponentTypesEvent;
 
 /**
  * Craft plugins are very much like little applications in and of themselves. We’ve made
@@ -221,6 +225,17 @@ class HtmlCache extends Plugin
                 }
             }
         );
+
+        if (Craft::$app->getRequest()->getIsCpRequest()) {
+            Event::on(
+                Utilities::class, 
+                Utilities::EVENT_REGISTER_UTILITY_TYPES,
+                function(RegisterComponentTypesEvent $event) {
+                    $event->types[] = CacheUtility::class;
+                }
+        );
+        }
+        
         parent::init();
     }
     
