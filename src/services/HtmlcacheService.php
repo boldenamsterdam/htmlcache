@@ -296,9 +296,9 @@ class HtmlcacheService extends Component
         } elseif (!empty($this->settings->cacheDuration)) {
             $settings = ['cacheDuration' => $this->settings->cacheDuration];
         } else {
-            $settings = ['cacheDuration' => 3600];
+            $settings = ['cacheDuration' => 0];
         }
-        if (time() - ($fmt = filemtime($file)) >= $settings['cacheDuration']) {
+        if ($settings['cacheDuration'] > 0 && time() - ($fmt = filemtime($file)) >= $settings['cacheDuration']) {
             unlink($file);
             return false;
         }
