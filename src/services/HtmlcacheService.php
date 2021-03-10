@@ -307,7 +307,16 @@ class HtmlcacheService extends Component
             unlink($file);
             return false;
         }
-        \Craft::$app->response->data = file_get_contents($file);
+
+        $page = file_get_contents($file);
+
+        if (Craft::$app->config->general->devMode) {
+            $filename = array_slice(explode('/',$file),-1)[0];
+            $uri = Craft::$app->getRequest()->getFullUri();
+            $page .= "<!-- HTMLCache Debugging. This is a cached version of '/{$uri}' using '{$file}' -->";
+        }
+        
+        \Craft::$app->response->data = $page;
         return true;
     }
 
