@@ -313,7 +313,8 @@ class HtmlcacheService extends Component
         if (Craft::$app->config->general->devMode) {
             $filename = array_slice(explode('/',$file),-1)[0];
             $uri = Craft::$app->getRequest()->getFullUri();
-            $page .= "<!-- HTMLCache Debugging. This is a cached version of '/{$uri}' using '{$file}' -->";
+            $date = date("F d Y H:i:s",filemtime($file));
+            $page .= "<!-- HTMLCache Debugging. -->\n<!-- This is a cached version of '/{$uri}' -->\n<!--'{$filename}' created {$date} -->";
         }
         
         \Craft::$app->response->data = $page;
