@@ -81,6 +81,11 @@ class HtmlcacheService extends Component
 		if ($this->settings->disablePreviewCache && Craft::$app->getRequest()->getIsPreview()) {
 			return false;
         }
+
+        // Skip if it has a query string and plugin is set to ignore urls with query strings
+        if ($this->settings->queryStringCaching && Craft::$app->getRequest()->getQueryString()) {
+            return false;
+        }
         
         // Skip if we're running in devMode and not in force mode
         if (\Craft::$app->config->general->devMode === true && $this->settings->forceOn == false) {
