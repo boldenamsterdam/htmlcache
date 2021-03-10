@@ -46,10 +46,10 @@
 }) }}
 
 {{ forms.lightswitchField({
-    label:        "Disable Query String Caching" | t,
+    label:        "Enable Query String Caching" | t,
     id:           'queryStringCaching',
     name:         'queryStringCaching',
-    instructions: "Disable the caching of a urls with query strings" | t,
+    instructions: "Enable the caching of a urls with query strings" | t,
     errors:       settings.getErrors('queryStringCaching'),
     on:           settings.queryStringCaching
 }) }}

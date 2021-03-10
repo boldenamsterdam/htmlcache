@@ -83,7 +83,7 @@ class HtmlcacheService extends Component
         }
 
         // Skip if it has a query string and plugin is set to ignore urls with query strings
-        if ($this->settings->queryStringCaching && Craft::$app->getRequest()->getQueryString()) {
+        if (!$this->settings->queryStringCaching && Craft::$app->getRequest()->getQueryString()) {
             return false;
         }
         
