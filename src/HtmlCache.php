@@ -31,8 +31,8 @@ use craft\elements\db\ElementQuery;
 use craft\elements\Category;
 use craft\elements\Entry;
 use craft\elements\Asset;
-use bolden\htmlcache\records\HtmlCacheCache;
-use bolden\htmlcache\records\HtmlCacheElement;
+use bolden\htmlcache\records\HtmlCacheCacheRecord as HtmlCacheCache;
+use bolden\htmlcache\records\HtmlCacheElementRecord as HtmlCacheElement;
 use craft\elements\User;
 use craft\elements\GlobalSet;
 
