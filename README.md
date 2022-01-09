@@ -1,4 +1,4 @@
-# HTML Cache plugin for Craft CMS 3.x
+# ⚠️ This plugin is no longer maintained. HTML Cache plugin for Craft CMS 3.x
 
 Cache pages to HTML and boost website performance.
 
