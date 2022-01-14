@@ -21,7 +21,7 @@ use craft\db\ActiveRecord;
  * @property string $uri
 
  */
-class HtmlCacheCache extends ActiveRecord
+class HtmlCacheCacheRecord extends ActiveRecord
 {
     // Public Methods
     // =========================================================================

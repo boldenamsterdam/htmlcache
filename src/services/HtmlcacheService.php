@@ -21,8 +21,8 @@ use craft\elements\Entry;
 use craft\services\Elements;
 use yii\base\Event;
 use craft\elements\db\ElementQuery;
-use bolden\htmlcache\records\HtmlCacheCache;
-use bolden\htmlcache\records\HtmlCacheElement;
+use bolden\htmlcache\records\HtmlCacheCacheRecord as HtmlCacheCache;
+use bolden\htmlcache\records\HtmlCacheElementRecord as HtmlCacheElement;
 
 /**
  * HtmlCache Service

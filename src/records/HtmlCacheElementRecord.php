@@ -19,7 +19,7 @@ use craft\db\ActiveRecord;
  * @property int $cacheId ID
  * @property int $elementId
  */
-class HtmlCacheElement extends ActiveRecord
+class HtmlCacheElementRecord extends ActiveRecord
 {
     // Public Methods
     // =========================================================================
