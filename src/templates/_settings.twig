@@ -46,6 +46,24 @@
 }) }}
 
 {{ forms.lightswitchField({
+    label:        "Enable Query String Caching" | t,
+    id:           'queryStringCaching',
+    name:         'queryStringCaching',
+    instructions: "Enable the caching of a urls with query strings" | t,
+    errors:       settings.getErrors('queryStringCaching'),
+    on:           settings.queryStringCaching
+}) }}
+
+{{ forms.lightswitchField({
+    label:        "Disable Preview Cache" | t,
+    id:           'disablePreviewCache',
+    name:         'disablePreviewCache',
+    instructions: "Disable the caching of a preview url, this prevents a draft from being publicly accessible" | t,
+    errors:       settings.getErrors('disablePreviewCache'),
+    on:           settings.disablePreviewCache
+}) }}
+
+{{ forms.lightswitchField({
     label:        "Purge Cache now?" | t,
     id:           'purgeCache',
     name:         'purgeCache',
@@ -72,7 +90,7 @@
     cols:           [
                         {
                             heading: 'Excluded paths' | t,
-                            info: 'Enter precise URL paths or regular expressions without the <span class="code">siteURL</span> part as they are returned by <span class="code">\Craft::$app->request->getFullPath()</span>, like "any/page" insteadof "https://example.com/site-specific/path/any/page".' | t,
+                            info: 'Enter precise URL paths or regular expressions without the <span class="code">siteURL</span> part as they are returned by <span class="code">\Craft::$app->getRequest()->getFullPath()</span>, like "any/page" insteadof "https://example.com/site-specific/path/any/page".' | t,
                             type: 'singleline',
                             placeholder: 'path/to/excluded/page OR regex like path/.*/excluded/.*',
                         },

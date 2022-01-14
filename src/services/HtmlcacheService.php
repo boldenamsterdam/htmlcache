@@ -38,7 +38,7 @@ class HtmlcacheService extends Component
      */
     public function __construct()
     {
-        $this->uri = \Craft::$app->request->getParam('p', '');
+        $this->uri = \Craft::$app->getRequest()->getPathInfo() ?: '__HOME__';
         $this->siteId = \Craft::$app->getSites()->getCurrentSite()->id;
         $this->settings = HtmlCache::getInstance()->getSettings();
     }
@@ -77,6 +77,16 @@ class HtmlcacheService extends Component
      */
     public function canCreateCacheFile()
     {
+        // Skip if it's a preview url
+		if ($this->settings->disablePreviewCache && Craft::$app->getRequest()->getIsPreview()) {
+			return false;
+        }
+
+        // Skip if it has a query string and plugin is set to ignore urls with query strings
+        if (!$this->settings->queryStringCaching && Craft::$app->getRequest()->getQueryString()) {
+            return false;
+        }
+        
         // Skip if we're running in devMode and not in force mode
         if (\Craft::$app->config->general->devMode === true && $this->settings->forceOn == false) {
             return false;
@@ -93,25 +103,25 @@ class HtmlcacheService extends Component
         }
 
         // Skip if it's a CP Request
-        if (\Craft::$app->request->getIsCpRequest()) {
+        if (\Craft::$app->getRequest()->getIsCpRequest()) {
             return false;
         }
 
         // Skip if it's an action Request
-        if (\Craft::$app->request->getIsActionRequest()) {
+        if (\Craft::$app->getRequest()->getIsActionRequest()) {
             return false;
         }
 
         // Skip if it's a preview request
-        if (\Craft::$app->request->getIsLivePreview()) {
+        if (\Craft::$app->getRequest()->getIsLivePreview()) {
             return false;
         }
         // Skip if it's a post request
-        if (!\Craft::$app->request->getIsGet()) {
+        if (!\Craft::$app->getRequest()->getIsGet()) {
             return false;
         }
         // Skip if it's an ajax request
-        if (\Craft::$app->request->getIsAjax()) {
+        if (\Craft::$app->getRequest()->getIsAjax()) {
             return false;
         }
         // Skip if route from element api
@@ -157,7 +167,7 @@ class HtmlcacheService extends Component
     private function isPathExcluded()
     {
         // determine currently requested URL path and the multi-site ID
-        $requestedPath = \Craft::$app->request->getFullPath();
+        $requestedPath = \Craft::$app->getRequest()->getFullPath();
         $requestedSiteId = \Craft::$app->getSites()->getCurrentSite()->id;
 
         // compare with excluded paths and sites from the settings
@@ -291,13 +301,23 @@ class HtmlcacheService extends Component
         } elseif (!empty($this->settings->cacheDuration)) {
             $settings = ['cacheDuration' => $this->settings->cacheDuration];
         } else {
-            $settings = ['cacheDuration' => 3600];
+            $settings = ['cacheDuration' => 0];
         }
-        if (time() - ($fmt = filemtime($file)) >= $settings['cacheDuration']) {
+        if ($settings['cacheDuration'] > 0 && time() - ($fmt = filemtime($file)) >= $settings['cacheDuration']) {
             unlink($file);
             return false;
         }
-        \Craft::$app->response->data = file_get_contents($file);
+
+        $page = file_get_contents($file);
+
+        if (Craft::$app->config->general->devMode) {
+            $filename = array_slice(explode('/',$file),-1)[0];
+            $uri = Craft::$app->getRequest()->getFullUri();
+            $date = date("F d Y H:i:s",filemtime($file));
+            $page .= "<!-- HTMLCache Debugging. -->\n<!-- This is a cached version of '/{$uri}' -->\n<!--'{$filename}' created {$date} -->";
+        }
+        
+        \Craft::$app->response->data = $page;
         return true;
     }
 
