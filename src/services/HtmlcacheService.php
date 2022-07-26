@@ -77,6 +77,10 @@ class HtmlcacheService extends Component
      */
     public function canCreateCacheFile()
     {
+		// Skip if it's a preview url
+		if ($this->settings->disablePreviewCache && Craft::$app->request->getIsPreview()) {
+			return false;
+		}
         // Skip if we're running in devMode and not in force mode
         if (\Craft::$app->config->general->devMode === true && $this->settings->forceOn == false) {
             return false;
@@ -109,11 +113,15 @@ class HtmlcacheService extends Component
         // Skip if it's a post request
         if (!\Craft::$app->request->getIsGet()) {
             return false;
-        }
+		}
+
         // Skip if it's an ajax request
         if (\Craft::$app->request->getIsAjax()) {
             return false;
-        }
+		}
+		
+		
+
         // Skip if route from element api
         if ($this->isElementApiRoute()) {
             return false;
